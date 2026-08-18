@@ -22,9 +22,12 @@ make demo
 - HTC never enables network or deployment by default.
 - No production or independent-reproduction claims without artifacts.
 
-## Federation
+## Related (Federation)
 
-Indexed by https://github.com/Zygros/sovereign-federation
+- **Map of all repos:** https://github.com/Zygros/sovereign-federation
+- Outsider audit & plain catalog: https://github.com/Zygros/sovereign-federation/tree/main/docs
+- Phoenix meta-archive: https://github.com/Zygros/PHOENIX-PROTOCOL-ULTIMATE
+- Multi-AI bridge: https://github.com/Zygros/multi-ai-convergence-protocol
 
 ## License
 
