@@ -35,9 +35,11 @@ The first CI attempt exposed one additional defect: the initial non-overwrite gu
 
 ## Verification boundary
 - Implementation and regression test are committed on the PR branch.
-- The first workflow attempt failed as above and is not counted as success.
-- The strengthened guard requires a fresh CI run before this repair can be marked verified.
-- Ruff is still configured with `|| true`; lint findings remain a separate follow-up and are not represented as passing lint.
+- Regression-driven correction committed: `adccaf94da6d147577754db6a6da47eb44d47612`.
+- **Phoenix Audit run 14 passed:** https://github.com/Zygros/omega-10/actions/runs/39313132034
+- **CI run 17 passed on Python 3.11 and 3.12:** https://github.com/Zygros/omega-10/actions/runs/39313132199. Both test jobs completed pytest successfully.
+- The earlier failed run 16 exposed the non-overwrite edge case and remains part of the audit trail; it is not represented as a passing run.
+- Ruff is still configured with `|| true`, so CI's green status does not establish that lint findings are resolved.
 
 
 ## Related evidence
