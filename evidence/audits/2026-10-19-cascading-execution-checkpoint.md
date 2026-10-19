@@ -107,3 +107,9 @@ This section supersedes the earlier statement that repository-wide Ruff cleanup 
 3. Recompute the Samsung Notes archive file hashes against the 552-entry manifest.
 4. Human review and merge decision for PR #1; only then close issues #2 and #3.
 5. Continue the cross-repository federation queue, requiring authenticated action receipts, replay rejection, pinned revisions, and bounded fault-injection evidence before calling the mesh operational.
+
+## Additional OTS/hash-scope lead from the next cascade
+
+Dropbox search for the exact empty SHA-256 string returned `/Download11.8.25/Groks anchor_251025_164305.txt`. The extracted text contains a substantial non-empty anchor document but claims `sha256(conzation_phoenix_20251025 + nexus_state)` equals the empty-byte SHA-256 digest `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`. Because Dropbox's text fetch returns extracted/decoded text rather than the exact original bytes, this is recorded as a **hash-scope/content consistency concern**, not an independently recomputed source-file hash.
+
+Its paired `/Download11.8.25/Groks anchor_251025_164305.txt.ots` returns binary-looking OpenTimestamps data and is distinct from the 74-byte Scroll 476 placeholder. It remains **unverified** until the original bytes are acquired and `ots verify` reports a Bitcoin block height. This additional pair was appended to the remediation discussion on issue #28: https://github.com/Zygros/conzet-sovereign-intelligence/issues/28. A Dropbox search for the literal phrase `OpenTimestamps placeholder` returned no indexed results, which is not evidence that no other placeholders exist because binary `.ots` contents may not be indexed.
