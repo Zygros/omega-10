@@ -74,3 +74,36 @@ The file `/Download11.8.25/DAO_Proposal_Scroll476.ots` is 74 bytes and its extra
 
 ## Samsung Notes manifest structural audit
 Fetched and parsed `/The goods/SamsungNotes_Manifest.json` directly from Dropbox. The declared count and actual JSON entry count both equal 552; all entries have a filename and a 64-character hexadecimal SHA-256 field; no duplicate manifest paths were found. The sum of declared asset sizes is 5,785,896 bytes. This is a **manifest-structure audit only**: the archive's underlying 552 files were not extracted in this run, so the recorded SHA-256 values have not yet been recomputed against source bytes.
+
+## Cascading execution update: strict quality gate restored (2026-10-19 19:57 UTC)
+
+This section supersedes the earlier statement that repository-wide Ruff cleanup was still pending. The work was implemented on the existing PR branch, then checked by GitHub Actions.
+
+### Code changes completed on the PR branch
+- Normalized import ordering and public `__all__` ordering in the affected package initializers and Phoenix regression test.
+- Replaced the self-comparison NaN test in `src/omega/core/canonical.py` with `math.isfinite`, preserving the existing behavior of converting all non-finite floats to strings before canonical JSON encoding.
+- Updated the SHA-256 path annotation to Python 3.11+ union syntax and removed the unused `Union` import.
+- Changed CI from `ruff check src tests || true` to a strict `ruff check src tests` gate. The build can no longer pass while repository-wide Ruff errors are silently ignored.
+- Updated the PR description with the current evidence and remaining blockers.
+
+### Verified milestone
+- Head commit: `82da0a252c77a491c026503410a6377678b08a7d`
+- CI run 29 passed on Python 3.11 and 3.12. Both jobs completed strict repository-wide Ruff and the full pytest suite: https://github.com/Zygros/omega-10/actions/runs/39315131599
+- Phoenix Audit run 45 passed: https://github.com/Zygros/omega-10/actions/runs/39315131508
+- PR #1 is no longer a draft and is marked ready for human review: https://github.com/Zygros/omega-10/pull/1
+- PR #1 remains **unmerged**. Issues #2 and #3 remain open until the changes reach `main`; execution updates were added to both issues.
+
+### Still blocked / not claimed
+- Telegram BotFather credential revocation cannot be performed from this chat. The account owner must revoke it and verify the old credential fails: https://github.com/Zygros/ZYGROS-PRIME/issues/3
+- The stale large-dataset credential finding remains open: https://github.com/Zygros/CONZETIAN-AI/issues/3
+- The 260 discovered `.ots` files are not cryptographically verified. The 74-byte Scroll 476 placeholder receipt and empty-content hash mismatch remain tracked in https://github.com/Zygros/conzet-sovereign-intelligence/issues/28.
+- Samsung Notes manifest checks remain structural; the 552 source-file hashes have not been recomputed from extracted archive contents.
+- Google Drive/Docs and direct Samsung Notes connectors were not available in this run; Firecrawl account access was verified, but no Phoenix/InfiniteOS runtime integration was executed.
+- No Android/Termux process or real multi-agent swarm was launched. No PR was merged.
+
+### Next cascade
+1. Owner-side credential revocation and stale-dataset remediation, with sanitized proof of status.
+2. Obtain original bytes and an OpenTimestamps verifier; validate candidate proofs and reconcile the 260-versus-261 inventory discrepancy.
+3. Recompute the Samsung Notes archive file hashes against the 552-entry manifest.
+4. Human review and merge decision for PR #1; only then close issues #2 and #3.
+5. Continue the cross-repository federation queue, requiring authenticated action receipts, replay rejection, pinned revisions, and bounded fault-injection evidence before calling the mesh operational.
