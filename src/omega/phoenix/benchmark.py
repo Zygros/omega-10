@@ -53,17 +53,17 @@ class PhoenixBenchmark:
         return hashlib.sha256(data).hexdigest()
 
     def run(self) -> PhoenixResult:
-        components_dir = self.root / "components"
-        components_dir.mkdir(parents=True, exist_ok=True)
-        journal = self.root / "phoenix-history.jsonl"
-
-        # This is a fresh benchmark run. Do not silently overwrite a prior
-        # run's evidence: callers must choose a new run directory.
-        if journal.exists() or any(components_dir.iterdir()):
+        # Refuse any non-empty run directory, not merely one containing
+        # Phoenix's own filenames. Unrelated prior evidence is evidence too.
+        if self.root.exists() and any(self.root.iterdir()):
             raise FileExistsError(
                 f"Benchmark path already contains data: {self.root}. "
                 "Choose a fresh run directory to preserve prior evidence."
             )
+
+        components_dir = self.root / "components"
+        components_dir.mkdir(parents=True, exist_ok=True)
+        journal = self.root / "phoenix-history.jsonl"
 
         baselines: dict[str, bytes] = {}
         with journal.open("xb") as history:
