@@ -18,7 +18,27 @@ Created issue #2 with the confirmed root cause and safe remediation plan:
 https://github.com/Zygros/omega-10/issues/2
 
 ## Current status
-Root cause identified and recorded. No code was changed to conceal the failure. The missing benchmark module was not fabricated because the existing public implementation/semantics were not present in the inspected repository tree. Remediation requires implementing the module against the existing test contract, then running CI before claiming resolution.
+The missing module has now been implemented on the PR branch and acceptance tests have been added. The first CI attempt exposed and helped fix an evidence-preservation edge case. A new CI run is required to verify the corrected implementation.
+
+## Cascading remediation update
+
+Implemented `src/omega/phoenix/benchmark.py` as a deterministic, local-only recovery fixture:
+- creates synthetic component baselines and a SHA-256-verified JSONL history;
+- deterministically corrupts the configured fraction;
+- restores components only from journal records whose payload hash verifies;
+- checks every component against its baseline and verifies the history bytes are unchanged;
+- refuses to start in a non-empty run directory, preserving unrelated prior evidence.
+
+Added `tests/test_phoenix_benchmark.py` for the 90% corruption acceptance path, zero-corruption no-op, invalid configuration, and non-overwrite behavior.
+
+The first CI attempt exposed one additional defect: the initial non-overwrite guard checked only Phoenix's component directory and journal, not unrelated files already in the run directory. That test failed (7 passed, 1 failed in Phoenix Audit); the guard has now been strengthened to reject any non-empty run directory.
+
+## Verification boundary
+- Implementation and regression test are committed on the PR branch.
+- The first workflow attempt failed as above and is not counted as success.
+- The strengthened guard requires a fresh CI run before this repair can be marked verified.
+- Ruff is still configured with `|| true`; lint findings remain a separate follow-up and are not represented as passing lint.
+
 
 ## Related evidence
 - Scout duplicate-signal audit PR: https://github.com/Zygros/conzet-sovereign-intelligence/pull/27
