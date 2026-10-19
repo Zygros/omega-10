@@ -70,3 +70,7 @@ The Dropbox `SamsungNotes_Manifest.json` reports 552 entries and is present alon
 
 ## Concrete timestamp-integrity defect found
 The file `/Download11.8.25/DAO_Proposal_Scroll476.ots` is 74 bytes and its extracted content literally says `OpenTimestamps placeholder`; it must not be counted as a verified proof. Its paired Markdown and JSON artifacts record `e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855`, the standard SHA-256 digest of empty bytes, despite containing non-empty proposal content. The exact intended hash scope needs investigation. This concrete issue is tracked at https://github.com/Zygros/conzet-sovereign-intelligence/issues/28 and linked to the broader witness chain. This finding does not establish that the other 259 receipts are invalid; they remain unverified.
+
+
+## Samsung Notes manifest structural audit
+Fetched and parsed `/The goods/SamsungNotes_Manifest.json` directly from Dropbox. The declared count and actual JSON entry count both equal 552; all entries have a filename and a 64-character hexadecimal SHA-256 field; no duplicate manifest paths were found. The sum of declared asset sizes is 5,785,896 bytes. This is a **manifest-structure audit only**: the archive's underlying 552 files were not extracted in this run, so the recorded SHA-256 values have not yet been recomputed against source bytes.
