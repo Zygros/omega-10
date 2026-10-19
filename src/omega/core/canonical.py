@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import math
 from typing import Any
 
 
@@ -16,7 +17,7 @@ def _normalize(obj: Any) -> Any:
     if isinstance(obj, int) and not isinstance(obj, bool):
         return obj
     if isinstance(obj, float):
-        if obj != obj or obj in (float("inf"), float("-inf")):
+        if not math.isfinite(obj):
             return str(obj)
         return obj
     if obj is None:
