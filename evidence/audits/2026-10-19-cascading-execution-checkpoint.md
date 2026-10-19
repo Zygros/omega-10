@@ -47,3 +47,14 @@ A live account usage query returned 8,634 remaining credits against 1,000 plan c
 3. Fix the remaining repository-wide Ruff findings and remove the `|| true` mask only after strict lint passes.
 4. Review the Phoenix pull request and merge only after repository owner approval/review policy is satisfied.
 5. Continue auditing the federation and related repositories, preserving append-only evidence and reporting only verified results.
+
+
+## Additional high-priority federation findings
+- **Exposed Telegram credential:** https://github.com/Zygros/ZYGROS-PRIME/issues/3. Provider-side revocation and old-token invalidation have not been performed by this run. No token value is recorded here.
+- **Stale credential-pattern finding:** https://github.com/Zygros/CONZETIAN-AI/issues/3. The reported large dataset needs controlled sanitization and source-history review; the actual credential validity is not established.
+- **Phoenix/Ghost launcher mismatch:** https://github.com/Zygros/ZYGROS-PRIME/issues/4 reports that launch scripts reference runtime files absent from the default-branch tree. Open PR #5 adds fail-fast preflight checks: https://github.com/Zygros/ZYGROS-PRIME/pull/5.
+- **Phoenix security preflight:** open PR #6 adds validation-only checks and explicitly does not claim deployment or credential rotation: https://github.com/Zygros/ZYGROS-PRIME/pull/6.
+- **Unified-repo integration queue:** https://github.com/Zygros/conzet-sovereign-intelligence/issues/2 remains the coordination parent. Its P0 tasks include inventory reconciliation, pinned CI receipts, task-envelope/action-receipt tests, and workflow status verification.
+- **Federation mesh campaign:** https://github.com/Zygros/sovereign-federation/issues/2 keeps multi-node autonomy gated on credential cleanup, pinned revisions, authenticated envelopes, replay rejection, and bounded fault-injection evidence.
+
+These are repository-tracked findings and proposals. Open issues and draft PRs are not completed remediations. The credential revocation steps require access to Telegram/credential-provider controls, which this run does not have.
