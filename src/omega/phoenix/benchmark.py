@@ -39,6 +39,8 @@ class PhoenixBenchmark:
         n_components: int = 100,
         corrupt_fraction: float = 0.90,
     ) -> None:
+        if isinstance(n_components, bool) or not isinstance(n_components, int):
+            raise ValueError("n_components must be an integer")
         if n_components < 1:
             raise ValueError("n_components must be at least 1")
         if not 0.0 <= corrupt_fraction <= 1.0:
