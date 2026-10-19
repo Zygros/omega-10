@@ -58,3 +58,11 @@ A live account usage query returned 8,634 remaining credits against 1,000 plan c
 - **Federation mesh campaign:** https://github.com/Zygros/sovereign-federation/issues/2 keeps multi-node autonomy gated on credential cleanup, pinned revisions, authenticated envelopes, replay rejection, and bounded fault-injection evidence.
 
 These are repository-tracked findings and proposals. Open issues and draft PRs are not completed remediations. The credential revocation steps require access to Telegram/credential-provider controls, which this run does not have.
+
+
+## Exhaustive Dropbox inventory and OTS verification attempt
+A recursive Dropbox inventory completed successfully across 1,770 entries in three pages. It found 260 files ending in `.ots`. The prior reported count of 261 is not yet reconciled; the 260 count is the exact current inventory from this completed scan, not proof that each receipt is valid.
+
+A sample pair, `/The goods/Immutable_Transcendence_LedgerPack.txt` and `/The goods/Immutable_Transcendence_LedgerPack.txt.ots`, was located. Dropbox's text extractor returns the proof as garbled binary, so it cannot establish confirmation. The repository already contains `scripts/ots_verify.py`, which requires the `ots` executable and treats confirmation as valid only when the client reports a Bitcoin block height. This execution environment does not have the client installed; installation was attempted but package retrieval failed due to unavailable DNS/network. **No OTS proof is claimed verified in this run.**
+
+The Dropbox `SamsungNotes_Manifest.json` reports 552 entries and is present alongside the 2.26 MB `SamsungNotesDL.zip` and other Samsung Notes bundles. Manifest hash recomputation against every original asset remains pending; the manifest's stated count is not equivalent to a successful 552-file integrity audit.
