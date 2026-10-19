@@ -69,7 +69,7 @@ class PhoenixBenchmark:
         with journal.open("xb") as history:
             for index in range(self.n_components):
                 name = f"component-{index:05d}.bin"
-                payload = f"phoenix:{self.seed}:component:{index}\n".encode("utf-8")
+                payload = f"phoenix:{self.seed}:component:{index}\n".encode()
                 baselines[name] = payload
                 (components_dir / name).write_bytes(payload)
                 record = {
@@ -79,7 +79,7 @@ class PhoenixBenchmark:
                     "payload_hex": payload.hex(),
                 }
                 history.write(
-                    (json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n").encode("utf-8")
+                    (json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n").encode()
                 )
             history.flush()
 
@@ -90,7 +90,7 @@ class PhoenixBenchmark:
         selected = set(random.Random(self.seed).sample(range(self.n_components), count_to_corrupt))
         for index in selected:
             name = f"component-{index:05d}.bin"
-            (components_dir / name).write_bytes(f"CORRUPTED:{self.seed}:{index}\n".encode("utf-8"))
+            (components_dir / name).write_bytes(f"CORRUPTED:{self.seed}:{index}\n".encode())
 
         # Recovery trusts only journal records whose payload hashes verify.
         recovered = 0
