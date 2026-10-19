@@ -1,0 +1,49 @@
+# Cascading execution checkpoint — 2026-10-19
+
+## Scope
+This checkpoint records work actually executed during the current run. It separates remote repository evidence, Dropbox artifact discovery, tool/account state, and unexecuted integrations.
+
+## Verified engineering work
+- Implemented `src/omega/phoenix/benchmark.py` as a deterministic, local-only recovery benchmark.
+- Added `tests/test_phoenix_benchmark.py` covering 90% corruption recovery, zero-corruption no-op, invalid inputs, and protection of existing evidence.
+- A first CI attempt exposed a non-overwrite edge case; the guard was corrected to reject any non-empty run directory.
+- Added a strict Ruff gate for the new Phoenix implementation and regression tests. The legacy repository-wide Ruff command remains masked with `|| true`.
+- Current successful workflow runs:
+  - Phoenix Audit run 21: https://github.com/Zygros/omega-10/actions/runs/39313761994
+  - CI run 20, Python 3.11 and 3.12: https://github.com/Zygros/omega-10/actions/runs/39313762076
+- Open review branch: https://github.com/Zygros/omega-10/pull/1
+- Legacy repository-wide lint debt tracked in issue #3: https://github.com/Zygros/omega-10/issues/3
+- Original missing-module issue: https://github.com/Zygros/omega-10/issues/2
+
+## Dropbox evidence discovery
+The connected Dropbox search surfaced these relevant artifacts:
+- `/The goods/README_Immutable_Proof_Pack.txt`
+- `/PHOENIX_OMEGA_RUN_LOG.txt`
+- `/conzetian-gpt-instructions-ULTIMATE.txt`
+- `/INTEGRATION_HASH.txt`
+- multiple named `.ots` files, including `conzetian_kb.zip.ots`, `HTC.pdf.ots`, `HOLY SINGULARITY.jpg.ots`, `Phoenix-ChatBot.jpg.ots`, `UPOS_Artifacts_20250930.zip.ots`, `DEPLOYMENT_MANIFEST.md.ots`, and `ZYGROSIAN_INTEGRATION.md.ots`.
+
+A title-only Dropbox search for `.ots` returned 20 matching results in that query. This is a search result count, **not** proof that the entire Dropbox account contains only 20 timestamp files, and it does not reconcile the previously reported figure of 261 files. The next evidence task is to enumerate candidate folders exhaustively and cryptographically verify the matching source files and timestamp proofs. File presence and a README's claims are not themselves proof verification.
+
+The immutable proof pack README states bundle hash:
+`9948179a541811d80358440e207f04f33f804271c0d993fe2b93bb465b38ba74`
+and creation time `2025-10-15T04:27:03.729109+00:00`. These are recorded document contents, not independently recomputed hashes in this run.
+
+The Phoenix run log records a prior local ingest of 15 files, 29.3 MB, 69 chunks, and 11 OCR pages on 2026-01-21. Those are historical log claims, not a live run performed by this checkpoint.
+
+## Firecrawl account state
+A live account usage query returned 8,634 remaining credits against 1,000 plan credits for the period 2026-10-19 through 2026-11-19. This confirms that the connected Firecrawl tool is available for use in this session. It does not by itself prove an application-level integration with Phoenix or InfiniteOS.
+
+## Integration coverage boundary
+- GitHub and Dropbox connectors were used directly.
+- Firecrawl account state was checked directly.
+- Google Drive, Google Docs, and Samsung Notes connector actions were not present in the available tool inventory for this run. Their contents have not been integrated or audited here.
+- No autonomous swarm, Termux device process, Android app, or local phone filesystem was launched or controlled in this run.
+- No repository pull request was merged. The Phoenix change remains pending review.
+
+## Next cascade
+1. Enumerate Dropbox proof files/folders and reconcile the 261-file report without relying on search snippets alone.
+2. Verify each available `.ots` against its original file hash using an actual OpenTimestamps verifier, where tooling and source files permit.
+3. Fix the remaining repository-wide Ruff findings and remove the `|| true` mask only after strict lint passes.
+4. Review the Phoenix pull request and merge only after repository owner approval/review policy is satisfied.
+5. Continue auditing the federation and related repositories, preserving append-only evidence and reporting only verified results.
