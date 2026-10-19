@@ -16,5 +16,8 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install -e ".[dev]"
-      - run: ruff check src tests || true
+      - name: Strict lint for Phoenix recovery changes
+        run: ruff check src/omega/phoenix/benchmark.py tests/test_phoenix_benchmark.py
+      - name: Legacy repository lint (known existing findings)
+        run: ruff check src tests || true
       - run: python -m pytest tests -v --tb=short
