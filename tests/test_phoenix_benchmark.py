@@ -29,7 +29,7 @@ def test_phoenix_zero_corruption_is_a_valid_noop(tmp_path: Path):
 
 @pytest.mark.parametrize(
     ("n_components", "corrupt_fraction"),
-    [(0, 0.5), (-1, 0.5), (10, -0.1), (10, 1.1)],
+    [(0, 0.5), (-1, 0.5), (1.9, 0.5), (True, 0.5), (10, -0.1), (10, 1.1)],
 )
 def test_phoenix_rejects_invalid_configuration(
     tmp_path: Path, n_components: int, corrupt_fraction: float
