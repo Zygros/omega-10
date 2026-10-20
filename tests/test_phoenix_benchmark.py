@@ -51,7 +51,7 @@ def test_concurrent_journal_append_cannot_escape_components_directory(
     payload = b"unexpected payload"
     malicious_record = {
         "index": 0,
-        "path": "/".join(["..", "..", "escaped.txt"]),
+        "path": str(Path("..") / ".." / "escaped.txt"),
         "sha256": hashlib.sha256(payload).hexdigest(),
         "payload_hex": payload.hex(),
     }
