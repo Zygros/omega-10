@@ -16,6 +16,6 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - run: pip install -e ".[dev]"
-      - name: Strict repository lint
-        run: ruff check src tests
+      - name: Strict repository-wide lint
+        run: ruff check .
       - run: python -m pytest tests -v --tb=short

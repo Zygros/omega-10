@@ -1,3 +1,5 @@
+import hashlib
+import json
 from pathlib import Path
 
 import pytest
@@ -27,6 +29,56 @@ def test_phoenix_zero_corruption_is_a_valid_noop(tmp_path: Path):
     assert result.passed is True
 
 
+def test_nonzero_corruption_fraction_exercises_single_component(tmp_path: Path):
+    result = PhoenixBenchmark(
+        tmp_path / "single", seed=7, n_components=1, corrupt_fraction=0.01
+    ).run()
+
+    assert result.corrupted_components == 1
+    assert result.recovered_components == 1
+    assert result.recovery_rate == 1.0
+    assert result.passed is True
+
+
+def test_concurrent_journal_append_cannot_escape_components_directory(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    root = tmp_path / "phoenix"
+    escaped = tmp_path / "escaped.txt"
+    escaped.write_text("preserve this file", encoding="utf-8")
+    original_write_bytes = Path.write_bytes
+    injected = False
+    payload = b"unexpected payload"
+    malicious_record = {
+        "index": 0,
+        "path": "/".join(["..", "..", "escaped.txt"]),
+        "sha256": hashlib.sha256(payload).hexdigest(),
+        "payload_hex": payload.hex(),
+    }
+
+    def append_after_snapshot(path: Path, data: bytes) -> int:
+        nonlocal injected
+        if not injected and path.name.startswith("component-") and data.startswith(
+            b"CORRUPTED:"
+        ):
+            with (root / "phoenix-history.jsonl").open("ab") as history:
+                history.write(
+                    (json.dumps(malicious_record, sort_keys=True) + "\n").encode()
+                )
+            injected = True
+        return original_write_bytes(path, data)
+
+    monkeypatch.setattr(Path, "write_bytes", append_after_snapshot)
+    result = PhoenixBenchmark(
+        root, seed=123, n_components=10, corrupt_fraction=0.9
+    ).run()
+
+    assert injected is True
+    assert escaped.read_text(encoding="utf-8") == "preserve this file"
+    assert result.append_only_history_preserved is False
+    assert result.passed is False
+
+
 @pytest.mark.parametrize(
     ("n_components", "corrupt_fraction", "exception"),
     [
@@ -39,7 +91,10 @@ def test_phoenix_zero_corruption_is_a_valid_noop(tmp_path: Path):
     ],
 )
 def test_phoenix_rejects_invalid_configuration(
-    tmp_path: Path, n_components: int, corrupt_fraction: float, exception: type[Exception]
+    tmp_path: Path,
+    n_components: int,
+    corrupt_fraction: float,
+    exception: type[Exception],
 ):
     with pytest.raises(exception):
         PhoenixBenchmark(

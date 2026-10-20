@@ -2,13 +2,14 @@
 
 This benchmark is a bounded test fixture, not a production recovery service.
 It writes synthetic component files and an append-only JSONL baseline journal,
-corrupts a deterministic subset, restores them from the journal, and verifies
-both recovery and journal immutability.
+corrupts a deterministic subset, restores them from verified journal records,
+and verifies both recovery and journal immutability.
 """
 from __future__ import annotations
 
 import hashlib
 import json
+import math
 import random
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -65,6 +66,7 @@ class PhoenixBenchmark:
 
         components_dir = self.root / "components"
         components_dir.mkdir(parents=True, exist_ok=True)
+        component_root = components_dir.resolve()
         journal = self.root / "phoenix-history.jsonl"
 
         baselines: dict[str, bytes] = {}
@@ -81,46 +83,88 @@ class PhoenixBenchmark:
                     "payload_hex": payload.hex(),
                 }
                 history.write(
-                    (json.dumps(record, sort_keys=True, separators=(",", ":")) + "\n").encode()
+                    (
+                        json.dumps(record, sort_keys=True, separators=(",", ":"))
+                        + "\n"
+                    ).encode()
                 )
             history.flush()
 
+        # Recovery reads only this immutable snapshot. A concurrent append
+        # cannot inject a new path into the set of records being replayed.
         journal_before = journal.read_bytes()
         journal_digest_before = self._digest(journal_before)
 
-        count_to_corrupt = int(self.n_components * self.corrupt_fraction)
-        selected = set(random.Random(self.seed).sample(range(self.n_components), count_to_corrupt))
+        # Round up so every accepted nonzero fraction actually exercises
+        # recovery, including n_components=1 with the default 0.90 fraction.
+        count_to_corrupt = (
+            math.ceil(self.n_components * self.corrupt_fraction)
+            if self.corrupt_fraction > 0.0
+            else 0
+        )
+        selected = set(
+            random.Random(self.seed).sample(range(self.n_components), count_to_corrupt)
+        )
         for index in selected:
             name = f"component-{index:05d}.bin"
-            (components_dir / name).write_bytes(f"CORRUPTED:{self.seed}:{index}\n".encode())
+            (components_dir / name).write_bytes(
+                f"CORRUPTED:{self.seed}:{index}\n".encode()
+            )
 
-        # Recovery trusts only journal records whose payload hashes verify.
+        # Validate record identity and payload against the in-memory baseline.
+        # Never use a journal-provided path to construct a write target.
         recovered = 0
-        for line in journal.read_text(encoding="utf-8").splitlines():
+        for line in journal_before.decode("utf-8").splitlines():
             record = json.loads(line)
-            name = str(record["path"])
-            payload = bytes.fromhex(str(record["payload_hex"]))
-            if self._digest(payload) != record["sha256"]:
+            if not isinstance(record, dict):
                 continue
+            index = record.get("index")
+            if (
+                isinstance(index, bool)
+                or not isinstance(index, int)
+                or not 0 <= index < self.n_components
+            ):
+                continue
+            name = f"component-{index:05d}.bin"
+            if record.get("path") != name:
+                continue
+            try:
+                payload = bytes.fromhex(record["payload_hex"])
+            except (KeyError, TypeError, ValueError):
+                continue
+            if (
+                payload != baselines[name]
+                or self._digest(payload) != record.get("sha256")
+            ):
+                continue
+
             target = components_dir / name
+            if target.is_symlink() or not target.resolve(strict=False).is_relative_to(
+                component_root
+            ):
+                continue
             if not target.exists() or target.read_bytes() != payload:
                 target.write_bytes(payload)
                 recovered += 1
 
-        # Validate every component against its immutable baseline.
-        restored_count = sum(
-            1
-            for name, expected in baselines.items()
-            if (components_dir / name).exists()
-            and (components_dir / name).read_bytes() == expected
-        )
+        # Validate every component against its immutable in-memory baseline.
+        restored_count = 0
+        for name, expected in baselines.items():
+            target = components_dir / name
+            if target.is_symlink() or not target.resolve(strict=False).is_relative_to(
+                component_root
+            ):
+                continue
+            if target.exists() and target.read_bytes() == expected:
+                restored_count += 1
+
         recovery_rate = (
             1.0 if count_to_corrupt == 0 else min(1.0, recovered / count_to_corrupt)
         )
+        journal_after = journal.read_bytes()
         history_preserved = (
-            journal.exists()
-            and self._digest(journal.read_bytes()) == journal_digest_before
-            and journal.read_bytes() == journal_before
+            self._digest(journal_after) == journal_digest_before
+            and journal_after == journal_before
         )
         passed = (
             restored_count == self.n_components
