@@ -1,5 +1,7 @@
 from pathlib import Path
+
 from omega.phoenix.benchmark import PhoenixBenchmark
+
 
 def test_phoenix_recovery(tmp_path: Path):
     bench = PhoenixBenchmark(tmp_path / "phoenix", seed=123, n_components=100, corrupt_fraction=0.90)
