@@ -14,13 +14,16 @@ import pathlib
 import subprocess
 import sys
 
+
 def git_head():
     return subprocess.check_output(
         ["git", "rev-parse", "HEAD"], text=True, stderr=subprocess.PIPE
     ).strip()
 
+
 def artifact_hash(path):
     return hashlib.sha256(pathlib.Path(path).read_bytes()).hexdigest()
+
 
 def link(artifact_path, claim, repo="omega-10"):
     artifact = pathlib.Path(artifact_path)
@@ -32,7 +35,7 @@ def link(artifact_path, claim, repo="omega-10"):
         "commit": git_head(),
         "artifact": str(artifact),
         "artifact_sha256": artifact_hash(artifact),
-        "linked_at": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        "linked_at": datetime.datetime.now(datetime.UTC).isoformat(),
         "status": "TESTED_PENDING_REVIEW",
         "independently_reproduced": False,
     }
@@ -43,6 +46,7 @@ def link(artifact_path, claim, repo="omega-10"):
     print(f"Appended receipt to {ledger}.")
     print("This records provenance; it does not automatically establish that the claim passed a test.")
     print("Independent reproduction is still required for VERIFIED status.")
+
 
 if __name__ == "__main__":
     if len(sys.argv) < 3:
