@@ -18,7 +18,7 @@ import subprocess
 import sys
 import tempfile
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -112,7 +112,7 @@ def run_benchmark(
     """Run the bounded mmap benchmark and return a machine-readable receipt."""
     validate_config(cycles, warmup, slots, rounds)
 
-    started_at = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    started_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
     mapped_bytes = slots * RECORD.size
     round_seconds: list[float] = []
     round_rates: list[float] = []
