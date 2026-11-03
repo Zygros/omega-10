@@ -1,3 +1,5 @@
 """Phoenix deterministic recovery benchmark."""
-from .benchmark import PhoenixBenchmark, PhoenixResult
-__all__ = ["PhoenixBenchmark", "PhoenixResult"]
+
+from .benchmark import PhoenixBenchmark, PhoenixResult, verify_ledger
+
+__all__ = ["PhoenixBenchmark", "PhoenixResult", "verify_ledger"]
