@@ -4,7 +4,7 @@
 
 **Status banner:** OMEGA-10 v0.1: implementation and local test evidence; not independently reproduced.
 
-Canonical serialization, SHA-256 hashing, append-only JSONL ledger with hash chaining, Ed25519 signing, run manifests, Master Codex, Phoenix deterministic recovery benchmark, red-team fault fixtures (≥20), and local-only Hyperbolic Time Chamber (HTC) bounded mode.
+Current tracked implementation: canonical JSON serialization, SHA-256 utilities, and a deterministic local Phoenix recovery benchmark with snapshot restoration, an append-only hash-chained event receipt, and a machine-readable result manifest. The shared core ledger/manifest/signing modules, Master Codex, red-team fixtures, HTC chamber, and demo modules are declared by package stubs or Makefile targets but are not present in the current tracked source tree; treat those capabilities as not implemented until their modules and tests are added.
 
 ## Quick start
 
@@ -12,10 +12,11 @@ Canonical serialization, SHA-256 hashing, append-only JSONL ledger with hash cha
 make bootstrap
 make test
 make phoenix
-make redteam
-make htc
-make demo
 ```
+
+## Not-yet-implemented targets
+
+`make redteam`, `make htc`, and `make demo` remain placeholders until their referenced modules are present and tested. The current package initializer exports only source files that exist.
 
 ## Evidence discipline
 

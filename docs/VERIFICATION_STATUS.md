@@ -27,3 +27,11 @@ For every benchmark or capability claim, record:
 - **Historical** — preserved material, not a current capability claim.
 
 Do not upgrade a claim's status without adding the corresponding evidence artifact.
+
+## 2026-11-03 source inventory correction
+
+The tracked source tree currently implements canonical JSON serialization, SHA-256 helpers, and the local Phoenix recovery benchmark. The shared `core/ledger.py`, `core/manifest.py`, `core/signing.py`, `memory/codex.py`, `htc/chamber.py`, `redteam/fixtures.py`, and `demonstrator/demo.py` modules are not present in the current tree even though earlier package initializers or Makefile targets referenced them. The `omega.core` initializer now exports only the implemented canonical/hash primitives so imports do not fail on absent modules.
+
+The Phoenix benchmark's event ledger is a benchmark-local hash chain. It is not a replacement claim for the missing shared `AppendOnlyLedger`, signing, or run-manifest APIs.
+
+**Current local benchmark status:** implemented and covered by deterministic tests; CI will run `make phoenix` and upload the machine-readable run directory. This is local recovery-fixture evidence, not independent reproduction, distributed recovery, production certification, or live AI execution.

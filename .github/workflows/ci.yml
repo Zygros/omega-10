@@ -4,6 +4,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+permissions:
+  contents: read
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -18,3 +20,12 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check src tests || true
       - run: python -m pytest tests -v --tb=short
+      - name: Run local Phoenix recovery benchmark
+        run: make phoenix
+      - name: Upload Phoenix recovery evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: omega10-phoenix-recovery-${{ matrix.python-version }}
+          path: runs/phoenix/
+          if-no-files-found: error
+          retention-days: 30
