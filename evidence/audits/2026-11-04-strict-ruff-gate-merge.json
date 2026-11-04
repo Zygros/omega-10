@@ -1,0 +1,100 @@
+{
+  "schema": "omega10.strict-ruff-and-phoenix-evidence/1",
+  "date": "2026-11-04",
+  "repository": "Zygros/omega-10",
+  "pull_request": 5,
+  "merged": true,
+  "merge_commit": "5259035a273ca616ba4b2f9477e6d8ff815fbb1b",
+  "tested_head": "879467e39d472b2dde4b185a9514121e7ad832f8",
+  "changes": {
+    "strict_ruff_gate": true,
+    "masked_ruff_bypass_removed": true,
+    "files_changed": 9,
+    "ruff_findings_resolved": 15,
+    "exception_semantics": "TypeError for invalid seed/corrupt_fraction types; ValueError for numeric range violations",
+    "invalid_configuration_cases": 8
+  },
+  "verification": {
+    "pre_merge_ci": {
+      "run_id": 41905659058,
+      "conclusion": "success",
+      "python_versions": [
+        "3.11",
+        "3.12"
+      ],
+      "pytest_passed_each": 11,
+      "ruff": "All checks passed",
+      "phoenix_benchmark": {
+        "components": 420,
+        "corrupted": 210,
+        "recovered": 210,
+        "recovery_rate": 1,
+        "append_only_history_preserved": true,
+        "ledger_valid": true,
+        "all_components_verified": true
+      }
+    },
+    "pre_merge_phoenix_audit": {
+      "run_id": 41905659162,
+      "conclusion": "success"
+    },
+    "post_merge_ci": {
+      "run_id": 41905813986,
+      "conclusion": "success",
+      "python_versions": [
+        "3.11",
+        "3.12"
+      ],
+      "pytest_passed_each": 11,
+      "ruff": "All checks passed",
+      "phoenix_benchmark": {
+        "components": 420,
+        "corrupted": 210,
+        "recovered": 210,
+        "recovery_rate": 1,
+        "append_only_history_preserved": true,
+        "ledger_valid": true,
+        "all_components_verified": true
+      }
+    },
+    "post_merge_phoenix_audit": {
+      "run_id": 41905813695,
+      "conclusion": "success"
+    }
+  },
+  "artifacts": [
+    {
+      "runtime": "3.11",
+      "artifact_id": 13360865085,
+      "github_zip_sha256": "fb7b54f3ee98923fce85bbc52db973be0a8183c3f8b4f33cb394edf21bf6b04f",
+      "independent_zip_sha256": "fb7b54f3ee98923fce85bbc52db973be0a8183c3f8b4f33cb394edf21bf6b04f",
+      "zip_digest_match": true,
+      "component_count": 420,
+      "ledger_events": 6,
+      "independent_ledger_chain_valid": true
+    },
+    {
+      "runtime": "3.12",
+      "artifact_id": 13360320907,
+      "github_zip_sha256": "e992ff7ce70656b2565a6078ab170e3004409040cd73e1bfbfbf332ffb5a23b7",
+      "independent_zip_sha256": "e992ff7ce70656b2565a6078ab170e3004409040cd73e1bfbfbf332ffb5a23b7",
+      "zip_digest_match": true,
+      "component_count": 420,
+      "ledger_events": 6,
+      "independent_ledger_chain_valid": true
+    }
+  ],
+  "failure_history": {
+    "initial_strict_ruff_run": 41904139345,
+    "findings": 15,
+    "final_runs_passed": true
+  },
+  "evidence_boundary": {
+    "repository_ci_verified": true,
+    "local_benchmark_only": true,
+    "distributed_recovery_not_established": true,
+    "external_agent_participation_not_established": true,
+    "production_deployment_not_claimed": true,
+    "independent_machine_reproduction_not_claimed": true
+  }
+}
