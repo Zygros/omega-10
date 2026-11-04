@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 import random
 from dataclasses import asdict, dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -71,13 +71,13 @@ class PhoenixBenchmark:
         corrupt_fraction: float = 0.5,
     ) -> None:
         if isinstance(seed, bool) or not isinstance(seed, int):
-            raise ValueError("seed must be an integer")
+            raise TypeError("seed must be an integer")
         if isinstance(n_components, bool) or not isinstance(n_components, int) or n_components < 1:
             raise ValueError("n_components must be a positive integer")
         if isinstance(corrupt_fraction, bool) or not isinstance(corrupt_fraction, (int, float)):
-            raise ValueError("corrupt_fraction must be a number in [0, 1]")
+            raise TypeError("corrupt_fraction must be an int or float")
         if not 0 <= float(corrupt_fraction) <= 1:
-            raise ValueError("corrupt_fraction must be a number in [0, 1]")
+            raise ValueError("corrupt_fraction must be in [0, 1]")
         self.workspace = Path(workspace)
         self.seed = seed
         self.n_components = n_components
@@ -94,7 +94,7 @@ class PhoenixBenchmark:
         body = {
             "schema": SCHEMA,
             "sequence": len(records) + 1,
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "event": event,
             "payload": payload,
             "previous_hash": previous,
@@ -107,7 +107,7 @@ class PhoenixBenchmark:
 
     def _new_run_dir(self) -> tuple[str, Path]:
         self.workspace.mkdir(parents=True, exist_ok=True)
-        run_id = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+        run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%S%fZ")
         candidate = self.workspace / f"run-{run_id}"
         suffix = 1
         while candidate.exists():
@@ -167,7 +167,7 @@ class PhoenixBenchmark:
         })
         immutable_prefix = ledger_path.read_bytes()
 
-        corrupt_count = int(round(self.n_components * self.corrupt_fraction))
+        corrupt_count = round(self.n_components * self.corrupt_fraction)
         selected = sorted(rng.sample(range(self.n_components), corrupt_count)) if corrupt_count else []
         corrupted_ids = [f"component-{index:06d}" for index in selected]
         for component_id in corrupted_ids:

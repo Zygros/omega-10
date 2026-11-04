@@ -38,13 +38,19 @@ def test_zero_corruption_is_a_valid_cycle(tmp_path: Path):
     assert result.passed is True
 
 
-@pytest.mark.parametrize("kwargs", [
-    {"n_components": 0},
-    {"n_components": -1},
-    {"corrupt_fraction": -0.1},
-    {"corrupt_fraction": 1.1},
-    {"seed": True},
-])
-def test_invalid_configuration_is_rejected(tmp_path: Path, kwargs):
-    with pytest.raises(ValueError):
+@pytest.mark.parametrize(
+    ("kwargs", "exception"),
+    [
+        ({"n_components": 0}, ValueError),
+        ({"n_components": -1}, ValueError),
+        ({"corrupt_fraction": -0.1}, ValueError),
+        ({"corrupt_fraction": 1.1}, ValueError),
+        ({"seed": True}, TypeError),
+        ({"seed": "42"}, TypeError),
+        ({"corrupt_fraction": True}, TypeError),
+        ({"corrupt_fraction": "0.5"}, TypeError),
+    ],
+)
+def test_invalid_configuration_is_rejected(tmp_path: Path, kwargs, exception):
+    with pytest.raises(exception):
         PhoenixBenchmark(tmp_path / "phoenix", **kwargs)

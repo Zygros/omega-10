@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import hashlib
 from pathlib import Path
-from typing import BinaryIO, Union
+from typing import BinaryIO
 
 
 def sha256_bytes(data: bytes) -> bytes:
@@ -17,7 +17,7 @@ def sha256_hex(data: bytes | str) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
-def sha256_file(path: Union[str, Path], chunk_size: int = 1 << 20) -> str:
+def sha256_file(path: str | Path, chunk_size: int = 1 << 20) -> str:
     p = Path(path)
     h = hashlib.sha256()
     with p.open("rb") as f:
