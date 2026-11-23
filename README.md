@@ -14,6 +14,12 @@ make test
 make phoenix
 ```
 
+## Phoenix artifact receipts
+
+`omega.phoenix.receipts` verifies an Omega receipt against artifact bytes and verifies standard Phoenix `manifest.sha256` files. The check is confined to a supplied artifact root, rejects traversal and symlinks, and rejects digest mismatches. The CLI linker now verifies the artifact receipt before appending it to `EVIDENCE_LEDGER.jsonl`.
+
+A matching digest establishes byte identity only. It does not prove that a claim is true, that a test ran, or that an OpenTimestamps proof has a confirmed Bitcoin attestation. A `VERIFIED` receipt requires `independently_reproduced: true`.
+
 ## Not-yet-implemented targets
 
 `make redteam`, `make htc`, and `make demo` remain placeholders until their referenced modules are present and tested. The current package initializer exports only source files that exist.
