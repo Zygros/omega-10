@@ -17,7 +17,7 @@ import sys
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO_ROOT / "src"))
 
-from omega.phoenix.receipts import verify_artifact_receipt
+from omega.phoenix.receipts import verify_artifact_receipt  # noqa: E402
 
 
 def git_head():
