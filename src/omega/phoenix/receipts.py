@@ -5,11 +5,11 @@ that a test actually ran, or that an external timestamp is independently confirm
 """
 from __future__ import annotations
 
-from collections.abc import Mapping
-from dataclasses import dataclass
 import hashlib
 import hmac
 import re
+from collections.abc import Mapping
+from dataclasses import dataclass
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -142,9 +142,7 @@ def verify_phoenix_sha256_manifest(
         if not _SHA256_RE.fullmatch(expected):
             failures.append(f"line {line_number}: invalid SHA-256 digest")
             continue
-        if separator == "  ":
-            relative_path = line[66:]
-        elif separator == " *":
+        if separator == "  " or separator == " *":
             relative_path = line[66:]
         else:
             failures.append(f"line {line_number}: malformed manifest separator")
