@@ -134,12 +134,24 @@ def verify_phoenix_sha256_manifest(
     ):
         if not line.strip():
             continue
-        fields = line.split(maxsplit=1)
-        if len(fields) != 2:
+        if len(line) < 66:
             failures.append(f"line {line_number}: malformed manifest entry")
             continue
-        expected, relative_path = fields
-        relative_path = relative_path.lstrip("*")
+        expected = line[:64]
+        separator = line[64:66]
+        if not _SHA256_RE.fullmatch(expected):
+            failures.append(f"line {line_number}: invalid SHA-256 digest")
+            continue
+        if separator == "  ":
+            relative_path = line[66:]
+        elif separator == " *":
+            relative_path = line[66:]
+        else:
+            failures.append(f"line {line_number}: malformed manifest separator")
+            continue
+        if not relative_path:
+            failures.append(f"line {line_number}: missing artifact path")
+            continue
         result = verify_file_digest(root, relative_path, expected)
         checked += 1
         if not result.valid:
