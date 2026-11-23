@@ -69,6 +69,30 @@ def test_phoenix_sha256_manifest_verifies_and_rejects_tampering(tmp_path: Path):
     assert "SHA-256 mismatch" in tampered.failures[0]
 
 
+def test_manifest_preserves_literal_leading_asterisk_paths(tmp_path: Path):
+    text_mode = tmp_path / "*literal.txt"
+    binary_mode = tmp_path / "*binary.txt"
+    text_mode.write_text("text-mode payload\\n", encoding="utf-8")
+    binary_mode.write_text("binary-mode payload\\n", encoding="utf-8")
+    text_digest = hashlib.sha256(text_mode.read_bytes()).hexdigest()
+    binary_digest = hashlib.sha256(binary_mode.read_bytes()).hexdigest()
+    manifest = tmp_path / "manifest.sha256"
+    manifest.write_text(
+        f"{text_digest}  *literal.txt\\n"
+        f"{binary_digest} **binary.txt\\n",
+        encoding="utf-8",
+    )
+
+    result = verify_phoenix_sha256_manifest(manifest, tmp_path)
+    assert result.valid is True
+    assert result.checked_files == 2
+
+    text_mode.write_text("tampered\\n", encoding="utf-8")
+    tampered = verify_phoenix_sha256_manifest(manifest, tmp_path)
+    assert tampered.valid is False
+    assert any("*literal.txt" in failure for failure in tampered.failures)
+
+
 def test_receipt_rejects_path_traversal(tmp_path: Path):
     receipt = {
         "repo": "phoenix-stack",
