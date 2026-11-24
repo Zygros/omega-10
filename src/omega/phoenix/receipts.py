@@ -5,12 +5,12 @@ that a test actually ran, or that an external timestamp is independently confirm
 """
 from __future__ import annotations
 
-from collections.abc import Mapping
-from dataclasses import dataclass
 import hashlib
 import hmac
-from pathlib import Path, PurePosixPath
 import re
+from collections.abc import Mapping
+from dataclasses import dataclass
+from pathlib import Path, PurePosixPath
 from typing import Any
 
 
